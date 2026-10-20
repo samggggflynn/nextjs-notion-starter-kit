@@ -1,22 +1,17 @@
-import * as React from 'react'
+import type * as types from 'notion-types'
 import cs from 'classnames'
-import { IoSunnyOutline } from '@react-icons/all-files/io5/IoSunnyOutline'
-import { IoMoonSharp } from '@react-icons/all-files/io5/IoMoonSharp'
-import { Header, Breadcrumbs, Search, useNotionContext } from 'react-notion-x'
-import * as types from 'notion-types'
+import * as React from 'react'
+import { Breadcrumbs, Header, Search, useNotionContext } from 'react-notion-x'
 
-import { useDarkMode } from 'lib/use-dark-mode'
-import { navigationStyle, navigationLinks, isSearchEnabled } from 'lib/config'
+import { isSearchEnabled, navigationLinks, navigationStyle } from '@/lib/config'
+import { MoonIcon } from '@/lib/icons/moon'
+import { SunIcon } from '@/lib/icons/sun'
+import { useDarkMode } from '@/lib/use-dark-mode'
 
 import styles from './styles.module.css'
 
-const ToggleThemeButton = () => {
-  const [hasMounted, setHasMounted] = React.useState(false)
-  const { isDarkMode, toggleDarkMode } = useDarkMode()
-
-  React.useEffect(() => {
-    setHasMounted(true)
-  }, [])
+function ToggleThemeButton() {
+  const { hasMounted, isDarkMode, toggleDarkMode } = useDarkMode()
 
   const onToggleTheme = React.useCallback(() => {
     toggleDarkMode()
@@ -27,14 +22,16 @@ const ToggleThemeButton = () => {
       className={cs('breadcrumb', 'button', !hasMounted && styles.hidden)}
       onClick={onToggleTheme}
     >
-      {hasMounted && isDarkMode ? <IoMoonSharp /> : <IoSunnyOutline />}
+      {hasMounted && isDarkMode ? <MoonIcon /> : <SunIcon />}
     </div>
   )
 }
 
-export const NotionPageHeader: React.FC<{
+export function NotionPageHeader({
+  block
+}: {
   block: types.CollectionViewPageBlock | types.PageBlock
-}> = ({ block }) => {
+}) {
   const { components, mapPageUrl } = useNotionContext()
 
   if (navigationStyle === 'default') {
@@ -49,7 +46,7 @@ export const NotionPageHeader: React.FC<{
         <div className='notion-nav-header-rhs breadcrumbs'>
           {navigationLinks
             ?.map((link, index) => {
-              if (!link.pageId && !link.url) {
+              if (!link?.pageId && !link?.url) {
                 return null
               }
 
